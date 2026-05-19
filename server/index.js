@@ -8,14 +8,18 @@ import { demoFlights } from "./sampleFlights.js";
 const PORT = Number(process.env.PORT || 4000);
 const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS || 10000);
 const OPENSKY_URL = "https://opensky-network.org/api/states/all";
+const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || "http://127.0.0.1:5173,http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: CLIENT_ORIGINS }));
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
+    origin: CLIENT_ORIGINS,
     methods: ["GET"]
   }
 });
@@ -139,7 +143,7 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`FlightTracker backend listening on http://127.0.0.1:${PORT}`);
+  console.log(`FlightTracker backend listening on port ${PORT}`);
   updateFlights();
   setInterval(updateFlights, POLL_INTERVAL_MS);
 });

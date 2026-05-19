@@ -15,7 +15,7 @@ import {
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import { formatAltitude, formatCoordinate, formatSpeed, formatTime, metersToFeet, msToKnots } from "./lib/formatters";
-import { createFlightSocket } from "./lib/socket";
+import { apiBaseUrl, createFlightSocket } from "./lib/socket";
 
 const socket = createFlightSocket();
 
@@ -117,7 +117,7 @@ function App() {
       setSelectedId((current) => current ?? nextSnapshot.flights?.[0]?.id ?? null);
     });
 
-    fetch("/api/flights")
+    fetch(`${apiBaseUrl}/api/flights`)
       .then((response) => response.json())
       .then((data) => setSnapshot(data))
       .catch(() => {});
